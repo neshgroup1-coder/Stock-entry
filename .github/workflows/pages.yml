@@ -1,7 +1,11 @@
 name: Deploy website (GitHub Pages)
 
+# Runs after the APK has been built and published, so the
+# "new version" notice only appears once the new APK is ready.
 on:
-  push:
+  workflow_run:
+    workflows: ["Build Android APK"]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -16,12 +20,22 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Stamp build id
+        run: |
+          ID=$(git rev-parse --short=7 HEAD)
+          sed -i "s/__BUILD__/$ID/" www/index.html
+          echo "{\"version\":\"$ID\"}" > www/version.json
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

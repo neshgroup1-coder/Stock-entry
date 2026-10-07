@@ -6,13 +6,19 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   apk:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Stamp build id
+        run: |
+          ID=$(git rev-parse --short=7 HEAD)
+          sed -i "s/__BUILD__/$ID/" www/index.html
+          echo "{\"version\":\"$ID\"}" > www/version.json
 
       - uses: actions/setup-node@v4
         with:
@@ -23,11 +29,25 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Use fixed signing key (so APK updates install over the old app)
+        run: |
+          mkdir -p ~/.android
+          cp debug.keystore ~/.android/debug.keystore
+
       - name: Install dependencies
         run: npm install
 
       - name: Add Android platform
         run: npx cap add android
+
+      - name: Add in-app updater (download + install APK inside the app)
+        run: |
+          cp native/ApkInstallerPlugin.java android/app/src/main/java/com/assoft/stockentry/ApkInstallerPlugin.java
+          cp native/MainActivity.java android/app/src/main/java/com/assoft/stockentry/MainActivity.java
+          cp native/file_paths.xml android/app/src/main/res/xml/file_paths.xml
+          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
+          grep -n "REQUEST_INSTALL_PACKAGES" android/app/src/main/AndroidManifest.xml
+          ls android/app/src/main/java/com/assoft/stockentry/
 
       - name: Generate app icons
         continue-on-error: true
@@ -40,9 +60,21 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk StockEntry.apk
+
+      - name: Upload APK (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: StockEntry-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: StockEntry.apk
           retention-days: 30
+
+      - name: Publish APK to Releases (download link for phones)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest APK
+          body: Newest Stock Entry APK. Open this on the phone to update.
+          files: StockEntry.apk
+          make_latest: true
