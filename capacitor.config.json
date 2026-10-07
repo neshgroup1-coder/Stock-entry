@@ -1,0 +1,8 @@
+{
+  "appId": "com.assoft.stockentry",
+  "appName": "Stock Entry",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}
