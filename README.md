@@ -17,6 +17,11 @@ Repo -> **Actions** tab -> "Build Android APK" -> run complete aakumbol (~5-8 mi
 Phone-il install cheyyumbol "Install unknown apps" allow cheyyanam.
 Run cheyyan thonniyal: Actions -> Build Android APK -> Run workflow.
 
+## Phone-il update varunnath
+`www/index.html` commit cheythal: APK build aakum -> Releases-il `StockEntry.apk` maarum -> website update aakum. Install cheytha phones-il app thurakkumbol "New version available" button kaanum. Tap cheythal app-ilthanne APK download aakum, pinne Android-nte Install/Update window varum (Chrome venda). Aadyam "Install unknown apps" allow cheyyan paranjal allow cheyth thirich vannu veendum tap cheyyuka.
+Fixed signing key (`debug.keystore`) ullathu kondu update pazhaya app-inu mukalil install aakum, data poyilla.
+Pazhaya APK (ee key illathe build cheythath) onnu **uninstall** cheyth puthiyathu install cheyyanam. Athinu munpe app-il "not synced" entries illennu urappikkuka.
+
 ## App maattiyal
 `www/index.html` edit cheyth commit cheyyuka. Website-um APK-yum automatic aayi puthuthaakum.
 
