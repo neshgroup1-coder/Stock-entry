@@ -45,6 +45,15 @@ textarea{min-height:110px;font:14px/1.4 ui-monospace,Consolas,monospace}
 .note{font-size:13px;color:var(--mute);margin:8px 0 0}
 .upd{display:block;width:100%;border:0;font:inherit;line-height:1.3;margin:0 0 14px;padding:14px;border-radius:10px;background:var(--acc);color:var(--accInk);font-weight:700;text-align:center;text-decoration:none}
 .upd[hidden]{display:none}
+@media (min-width:900px){
+main{max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:20px;align-items:start;grid-template-rows:repeat(4,auto) 1fr;padding:24px 24px 48px}
+main>.upd,main>h1,main>.sub{grid-column:1/-1}
+main>section:nth-of-type(1){grid-column:1;grid-row:4/span 2}
+main>section:nth-of-type(2){grid-column:2;grid-row:4}
+main>section:nth-of-type(3){grid-column:2;grid-row:5}
+h1{font-size:26px}
+}
+@media (min-width:1500px){main{max-width:1400px}}
 </style>
 </head>
 <body>
