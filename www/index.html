@@ -40,17 +40,51 @@ li b{font-variant-numeric:tabular-nums}
 li small{display:block;color:var(--mute)}
 li button{min-height:40px;min-width:40px;border:1px solid var(--line);background:var(--chip);color:var(--bad);border-radius:8px;font-size:18px}
 .empty{color:var(--mute);padding:6px 0}
+.acts{display:flex;gap:6px;flex-shrink:0}
+li .acts button{font-size:14px;padding:6px 10px;color:var(--ink)}
+li .acts button.del{color:var(--bad)}
+.tools{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-bottom:8px}
+#cancelEdit{width:100%;margin-top:10px}
+#cancelEdit[hidden]{display:none}
+.pinov{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:pinfade .15s ease}
+.pinbox{width:100%;max-width:320px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:22px;padding:22px 20px 18px;box-shadow:0 20px 50px rgba(0,0,0,.45);text-align:center;animation:pinpop .18s ease}
+.pinico{width:56px;height:56px;margin:0 auto 10px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(124,58,237,.45)}
+.pinbox h3{margin:0;font-size:19px}
+.pinbox p{margin:4px 0 16px;color:var(--mute);font-size:14px;min-height:20px}
+.pinbox p.bad{color:var(--bad);font-weight:600}
+.pindots{display:flex;justify-content:center;gap:14px;margin-bottom:18px}
+.pindots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--mute);transition:all .12s}
+.pindots i.on{background:#7c3aed;border-color:#7c3aed;transform:scale(1.15)}
+.pindots.shake{animation:pinshake .35s}
+.pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pinpad button{min-height:56px;padding:0;border-radius:14px;border:1px solid var(--line);background:var(--chip);color:var(--ink);font:inherit;font-size:22px;font-weight:600;cursor:pointer}
+.pinpad button:active{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.pinpad button.ghost{background:transparent;border-color:transparent;font-size:15px;color:var(--mute)}
+@keyframes pinfade{from{opacity:0}to{opacity:1}}
+@keyframes pinpop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pinshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.tcard{padding:0;overflow:hidden;border-color:#7c3aed}
+.txpage{position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;animation:txslide .22s ease}
+.txhead{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;background:#7c3aed;color:#fff;padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.txhead h2{flex:1;margin:0;font-size:17px;text-align:center}
+.txhead button{min-height:44px;border:0;border-radius:10px;background:rgba(255,255,255,.2);color:#fff;font:inherit;font-weight:600;padding:8px 14px;cursor:pointer}
+.txin{max-width:640px;margin:0 auto;padding:14px 14px calc(40px + env(safe-area-inset-bottom,0px))}
+@keyframes txslide{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+.thead{width:100%;min-height:56px;display:flex;justify-content:space-between;align-items:center;gap:10px;border:0;background:#7c3aed;color:#fff;font:inherit;font-size:17px;font-weight:700;padding:12px 14px;text-align:left;cursor:pointer}
+.thead .arr{font-size:26px;line-height:1}
+.editing{outline:3px solid var(--acc);outline-offset:2px}
 details summary{min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer}
 textarea{min-height:110px;font:14px/1.4 ui-monospace,Consolas,monospace}
 .note{font-size:13px;color:var(--mute);margin:8px 0 0}
 .upd{display:block;width:100%;border:0;font:inherit;line-height:1.3;margin:0 0 14px;padding:14px;border-radius:10px;background:var(--acc);color:var(--accInk);font-weight:700;text-align:center;text-decoration:none}
 .upd[hidden]{display:none}
 @media (min-width:900px){
-main{max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:20px;align-items:start;grid-template-rows:repeat(4,auto) 1fr;padding:24px 24px 48px}
+main{max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:20px;align-items:start;grid-template-rows:repeat(5,auto) 1fr;padding:24px 24px 48px}
 main>.upd,main>h1,main>.sub{grid-column:1/-1}
-main>section:nth-of-type(1){grid-column:1;grid-row:4/span 2}
+main>section:nth-of-type(1){grid-column:1;grid-row:4/span 3}
 main>section:nth-of-type(2){grid-column:2;grid-row:4}
 main>section:nth-of-type(3){grid-column:2;grid-row:5}
+main>section:nth-of-type(4){grid-column:2;grid-row:6}
 h1{font-size:26px}
 }
 @media (min-width:1500px){main{max-width:1400px}}
@@ -67,7 +101,7 @@ h1{font-size:26px}
 <div><label for="date">Date</label><input id="date" type="date"></div>
 <div><label for="type">Type</label><select id="type"><option>Transfer</option><option>Production</option><option>Dispatch</option><option>Purchase</option><option>Adjustment</option><option>Rejection</option></select></div>
 </div>
-<label for="item">Item</label><select id="item"></select>
+<label for="isearch">Item</label><input id="isearch" type="search" autocomplete="off" placeholder="Search item code or name"><select id="item" style="margin-top:8px"></select>
 <div class="lab" style="margin-top:14px">From department</div><div class="flow" id="from"></div>
 <div class="lab" style="margin-top:14px">To department</div><div class="flow" id="to"></div>
 <div class="row">
@@ -81,6 +115,7 @@ h1{font-size:26px}
 </div>
 <label for="rem">Remarks</label><input id="rem" type="text" placeholder="Optional">
 <button class="go" id="save" type="button">Save entry</button>
+<button class="sec" id="cancelEdit" type="button" hidden>Cancel edit</button>
 <div class="msg" id="msg" role="status"></div>
 </section>
 
@@ -90,6 +125,19 @@ h1{font-size:26px}
 <p class="note">In Excel, click cell A of the next empty row in Stock Transactions and paste. After pasting, clear the saved entries so they are not pasted twice.</p>
 <button class="sec" id="clear" type="button" style="margin-top:10px">Clear saved entries</button>
 <div id="paste" hidden style="margin-top:12px"><label for="tsv">Select all and copy this text</label><textarea id="tsv" readonly></textarea></div>
+</section>
+
+<section id="txsec" class="tcard">
+<button type="button" class="thead" id="txtoggle" aria-expanded="false" aria-controls="txbody"><span>Edit / Delete Transactions <span id="txcnt"></span></span><span class="arr" aria-hidden="true">›</span></button>
+<div id="txbody" class="txpage" hidden>
+<div class="txhead"><button type="button" id="txback" aria-label="Back">← Back</button><h2>Transactions <span id="txcnt2"></span></h2><button type="button" id="txref">Refresh</button></div>
+<div class="txin">
+<div class="tools"><div><label for="mon">Month</label><input id="mon" type="month"></div></div>
+<ul id="txlist"></ul>
+<div class="msg" id="txmsg" role="status"></div>
+<p class="note">Tap Edit to change an entry, or Delete to remove it. Changes go to the database; in Excel use Data, Refresh All to see them.</p>
+</div>
+</div>
 </section>
 
 <section>
@@ -103,6 +151,7 @@ h1{font-size:26px}
 </main>
 <script>
 var FLOW=["Raw Material","Casting","Threading","Grinding & Polishing","Plating","Store","Customer"];
+var FROMS=FLOW.slice(0,-1).concat(["Supplier"]);
 var PREFIX={"Casting":"C","Threading":"T","Grinding & Polishing":"GP","Plating":"P","Store":"PL","Customer":"D"};
 var DEF_ITEMS="EL-001, Angle Cock\nEL-002, Bib Cock\nEL-003, Long body oval";
 var S={from:"Casting",to:"Threading",items:[],entries:[],last:{}};
@@ -114,11 +163,12 @@ function pad(n){return String(n).padStart(3,"0")}
 function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 function dmy(s){var p=s.split("-");return p[2]+"-"+p[1]+"-"+p[0]}
 function chips(id,key){var box=$(id);box.innerHTML="";
- FLOW.concat(key==="to"?["Rejection"]:[]).forEach(function(n){var b=document.createElement("button");b.type="button";b.textContent=n;
+ (key==="from"?FROMS:FLOW.concat(["Rejection"])).forEach(function(n){var b=document.createElement("button");b.type="button";b.textContent=n;
  b.setAttribute("aria-pressed",S[key]===n);b.onclick=function(){S[key]=n;if(key==="from"&&$("type").value==="Transfer"){var i=FLOW.indexOf(n);S.to=FLOW[Math.min(i+1,FLOW.length-1)]}paint()};box.appendChild(b)})}
 function nextBatch(){return "B-"+pad((S.last.B||0)+1)}
-function paint(){chips("from","from");chips("to","to");if(S.from==="Raw Material")$("doc").value=nextBatch();else if(S.prevFrom==="Raw Material")$("doc").value=S.lastBatch||"";S.prevFrom=S.from}
-function fillItems(){var s=$("item"),v=s.value;s.innerHTML="";S.items.forEach(function(it){var o=document.createElement("option");o.value=it.code;o.textContent=it.code+"  "+it.name;s.appendChild(o)});if(v)s.value=v}
+function paint(){chips("from","from");chips("to","to");if(S.editId){S.prevFrom=S.from;return}if(S.from==="Raw Material")$("doc").value=nextBatch();else if(S.prevFrom==="Raw Material")$("doc").value=S.lastBatch||"";S.prevFrom=S.from}
+function fillItems(){var s=$("item"),v=s.value,q=($("isearch").value||"").toLowerCase().trim().split(/\s+/),n=0;s.innerHTML="";S.items.forEach(function(it){var h=(it.code+" "+it.name).toLowerCase();if(!q.every(function(w){return h.indexOf(w)>-1}))return;var o=document.createElement("option");o.value=it.code;o.textContent=it.code+"  "+it.name;s.appendChild(o);n++});if(!n){var o=document.createElement("option");o.value="";o.textContent="No item found";s.appendChild(o)}else if(v)s.value=v}
+$("isearch").oninput=fillItems;
 var SB_URL="https://wdvpwohnzqohwjqfeddk.supabase.co",SB_KEY="sb_publishable_e6JLmW1cTn1L2NBN-rkvcg_sNakZrEE";
 function toRow(e){return {date:e.date,doc:e.doc,code:e.code,name:e.name,from_loc:e.from,to_loc:e.to,qty:e.qty,unit:e.unit,wt:e.wt===""?null:e.wt,type:e.type,rej:e.rej,rem:e.rem}}
 var syncing=false;
@@ -139,7 +189,7 @@ function render(){var ul=$("list");ul.innerHTML="";var pending=S.entries.filter(
  if(!S.entries.length){ul.innerHTML='<li class="empty">No entries yet. Saved entries appear here.</li>';return}
  S.entries.slice().reverse().forEach(function(e,ri){var idx=S.entries.length-1-ri;var li=document.createElement("li");
  li.innerHTML="<div><b>"+e.qty+" "+e.unit+"</b> "+e.code+" "+e.name+"<small>"+e.from+" to "+e.to+" | "+e.type+" | "+e.doc+(e.wt?" | "+e.wt+" kg (avg "+(e.wt/e.qty).toFixed(3)+" kg/pc)":"")+(e.rej?" | rejected "+e.rej:"")+(e.rem?" | "+e.rem:"")+"</small><small>"+dmy(e.date)+(e.synced?" \u2713 in database":" \u23f3 not synced yet")+"</small></div>";
- var b=document.createElement("button");b.type="button";b.setAttribute("aria-label","Delete entry");b.textContent="\u00d7";b.onclick=function(){S.entries.splice(idx,1);store("sr_entries",S.entries);render()};li.appendChild(b);ul.appendChild(li)})}
+ var b=document.createElement("button");b.type="button";b.setAttribute("aria-label","Delete entry");b.textContent="\u00d7";b.onclick=function(){askPin(function(){S.entries.splice(idx,1);store("sr_entries",S.entries);render()})};li.appendChild(b);ul.appendChild(li)})}
 $("type").onchange=function(){var t=$("type").value;
  if(t==="Production"){S.from="Raw Material";S.to="Casting"}
  else if(t==="Dispatch"){S.from="Store";S.to="Customer"}
@@ -159,22 +209,95 @@ $("save").onclick=function(){
  if(S.from===S.to)return msg("From and To departments must be different.","bad");
  var doc=$("doc").value.trim();if(!doc)return msg("Enter a Batch No.","bad");
  var e={date:$("date").value,doc:doc,code:it.code,name:it.name,from:S.from,to:S.to,qty:qty,unit:$("unit").value,type:$("type").value,rej:rej,rem:$("rem").value.trim(),wt:isNaN(wt)?"":wt};
+ if(S.editId)return updateTx(e);
  S.entries.push(e);store("sr_entries",S.entries);
  var m=/^([A-Z]+)-(\d+)$/i.exec(doc);if(m){var p=m[1].toUpperCase();S.last[p]=Math.max(S.last[p]||0,parseInt(m[2],10));store("sr_last",S.last)}
  S.lastBatch=doc;store("sr_batch",doc);
  $("qty").value="";$("rej").value="";$("rem").value="";$("wt").value="";S.prevFrom=null;paint();render();msg("Saved "+e.qty+" "+e.unit+" of "+it.name+": "+e.from+" to "+e.to+". Syncing...","ok");
- syncNow().then(function(ok){msg(ok?"Saved and synced to database.":"Saved on this phone. Will sync when internet is back.",ok?"ok":"bad")})};
+ syncNow().then(function(ok){msg(ok?"Saved and synced to database.":"Saved on this phone. Will sync when internet is back.",ok?"ok":"bad");if(ok)loadMonth()})};
 $("copy").onclick=function(){if(!S.entries.length)return msg("Nothing to copy yet.","bad");
  var t=S.entries.map(rowOf).join("\n");$("tsv").value=t;$("paste").hidden=false;
  var done=function(){msg("Copied "+S.entries.length+" rows. Paste them into Stock Transactions.","ok")};
  var fb=function(){$("tsv").focus();$("tsv").select();msg("Select all in the box below and copy it.","")};
  try{navigator.clipboard.writeText(t).then(done,fb)}catch(e){fb()}};
-$("clear").onclick=function(){if(!S.entries.length)return;if(confirm("Delete all saved entries? Do this only after pasting them into Excel.")){S.entries=[];store("sr_entries",S.entries);$("paste").hidden=true;render();msg("Saved entries cleared.","ok")}};
+$("clear").onclick=function(){if(!S.entries.length)return;askPin(function(){if(confirm("Delete all saved entries? Do this only after pasting them into Excel.")){S.entries=[];store("sr_entries",S.entries);$("paste").hidden=true;render();msg("Saved entries cleared.","ok")}})};
 $("saveItems").onclick=function(){var list=parseItems($("items").value);if(!list.length)return msg("Enter at least one item as: code, name","bad");msg("Saving items...","");
  pushItems(list).then(loadItemsRemote).then(function(rows){applyItems(rows);msg("Item list saved to database ("+rows.length+" items).","ok")})
  .catch(function(){S.items=list;store("sr_itemtext",$("items").value);fillItems();msg("Saved on this phone only. Database items table not reachable.","bad")})};
+
+var TX=[],MSG_PERM="Not allowed by database. In Supabase run the update/delete policy SQL for entries.";
+function monRange(v){var p=v.split("-"),y=+p[0],m=+p[1],ny=m===12?y+1:y,nm=m===12?1:m+1;return [v+"-01",ny+"-"+String(nm).padStart(2,"0")+"-01"]}
+function txm(t,c){var m=$("txmsg");m.textContent=t;m.className="msg "+(c||"")}
+function loadMonth(keep){var v=$("mon").value;if(!v)return;var r=monRange(v);if(!keep)txm("Loading...","");
+ fetch(SB_URL+"/rest/v1/entries?select=id,date,doc,code,name,from_loc,to_loc,qty,unit,wt,type,rej,rem&date=gte."+r[0]+"&date=lt."+r[1]+"&order=date.desc,id.desc&limit=1000",{headers:{"apikey":SB_KEY}})
+ .then(function(x){if(!x.ok)throw new Error(x.status);return x.json()})
+ .then(function(rows){TX=rows;if(!keep)txm("","");renderTx()})
+ .catch(function(){TX=[];renderTx();txm("Could not load. Check internet.","bad")})}
+function renderTx(){var ul=$("txlist");ul.innerHTML="";$("txcnt").textContent="("+TX.length+")";$("txcnt2").textContent="("+TX.length+")";
+ if(!TX.length){ul.innerHTML='<li class="empty">No transactions in this month.</li>';return}
+ TX.forEach(function(t){var li=document.createElement("li");
+  li.innerHTML="<div><b>"+t.qty+" "+t.unit+"</b> "+t.code+" "+t.name+"<small>"+t.from_loc+" to "+t.to_loc+" | "+t.type+" | "+t.doc+(t.wt?" | "+t.wt+" kg":"")+(t.rej?" | rejected "+t.rej:"")+(t.rem?" | "+t.rem:"")+"</small><small>"+dmy(t.date)+"</small></div>";
+  var a=document.createElement("div");a.className="acts";
+  var e=document.createElement("button");e.type="button";e.textContent="Edit";e.onclick=function(){askPin(function(){closeTx();editTx(t);setTimeout(function(){window.scrollTo(0,0)},80)})};
+  var d=document.createElement("button");d.type="button";d.className="del";d.textContent="Delete";d.onclick=function(){askPin(function(){delTx(t)})};
+  a.appendChild(e);a.appendChild(d);li.appendChild(a);ul.appendChild(li)})}
+function sameLocal(t){for(var i=0;i<S.entries.length;i++){var e=S.entries[i];if(e.synced&&e.date===t.date&&e.doc===t.doc&&e.code===t.code&&e.from===t.from_loc&&e.to===t.to_loc&&+e.qty===+t.qty)return i}return -1}
+var EDIT_PIN="9061";
+function askPin(ok){
+ if(document.getElementById("pinov"))return;
+ var ov=document.createElement("div");ov.className="pinov";ov.id="pinov";
+ ov.innerHTML='<div class="pinbox" role="dialog" aria-modal="true" aria-label="Enter code"><div class="pinico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3>Enter code</h3><p id="pinmsg">Enter 4-digit code to continue</p><div class="pindots" id="pindots"><i></i><i></i><i></i><i></i></div><div class="pinpad" id="pinpad"></div></div>';
+ document.body.appendChild(ov);
+ var v="",busy=false,pad=ov.querySelector("#pinpad"),dots=ov.querySelectorAll("#pindots i"),m=ov.querySelector("#pinmsg"),dw=ov.querySelector("#pindots");
+ function close(){document.removeEventListener("keydown",kd);ov.remove()}
+ function draw(){for(var i=0;i<4;i++)dots[i].className=i<v.length?"on":""}
+ function press(d){if(busy||v.length>=4)return;v+=d;m.className="";draw();
+  if(v.length===4){busy=true;setTimeout(function(){
+   if(v===EDIT_PIN){close();ok()}
+   else{m.textContent="Wrong code, try again";m.className="bad";dw.classList.add("shake");if(navigator.vibrate)navigator.vibrate(120);
+    setTimeout(function(){dw.classList.remove("shake");v="";draw();busy=false},380)}},120)}}
+ function back(){if(busy)return;v=v.slice(0,-1);draw()}
+ function kd(e){if(e.key>="0"&&e.key<="9")press(e.key);else if(e.key==="Backspace")back();else if(e.key==="Escape")close()}
+ function mk(label,cls,fn,aria){var b=document.createElement("button");b.type="button";b.textContent=label;if(cls)b.className=cls;if(aria)b.setAttribute("aria-label",aria);b.onclick=fn;pad.appendChild(b)}
+ [1,2,3,4,5,6,7,8,9].forEach(function(n){mk(String(n),"",function(){press(String(n))})});
+ mk("Cancel","ghost",close);mk("0","",function(){press("0")});mk("\u232b","ghost",back,"Backspace");
+ ov.onclick=function(e){if(e.target===ov)close()};
+ document.addEventListener("keydown",kd)}
+function editTx(t){$("isearch").value="";fillItems();S.editId=t.id;S.editRow=t;S.from=t.from_loc;S.to=t.to_loc;
+ $("date").value=t.date;$("type").value=t.type;
+ if(!S.items.some(function(x){return x.code===t.code})){S.items.push({code:t.code,name:t.name});fillItems()}
+ $("item").value=t.code;$("qty").value=t.qty;$("unit").value=t.unit;$("wt").value=t.wt==null?"":t.wt;$("rej").value=t.rej||"";$("doc").value=t.doc;$("rem").value=t.rem||"";
+ paint();$("save").textContent="Update entry";$("cancelEdit").hidden=false;document.querySelector("section").classList.add("editing");
+ msg("Editing entry. Change what you need, then tap Update entry.","");window.scrollTo(0,0)}
+function endEdit(){S.editId=null;S.editRow=null;$("save").textContent="Save entry";$("cancelEdit").hidden=true;document.querySelector("section").classList.remove("editing");
+ $("qty").value="";$("rej").value="";$("rem").value="";$("wt").value="";S.prevFrom=null;if(S.lastBatch)$("doc").value=S.lastBatch;paint()}
+$("cancelEdit").onclick=function(){endEdit();msg("Edit cancelled.","")};
+function updateTx(e){var t=S.editRow;msg("Updating...","");
+ return fetch(SB_URL+"/rest/v1/entries?id=eq."+S.editId,{method:"PATCH",headers:{"apikey":SB_KEY,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify(toRow(e))})
+ .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+ .then(function(rows){if(!rows.length)throw new Error("perm");
+  var i=sameLocal(t);if(i>=0){e.synced=true;S.entries[i]=e;store("sr_entries",S.entries);render()}
+  endEdit();msg("Entry updated in database.","ok");loadMonth()})
+ .catch(function(err){msg(err.message==="perm"?MSG_PERM:"Could not update. Check internet.","bad")})}
+function delTx(t){if(!confirm("Delete this entry?\n"+t.qty+" "+t.unit+" "+t.code+" "+t.name+"\n"+t.from_loc+" to "+t.to_loc+" | "+dmy(t.date)))return;txm("Deleting...","");
+ fetch(SB_URL+"/rest/v1/entries?id=eq."+t.id,{method:"DELETE",headers:{"apikey":SB_KEY,"Prefer":"return=representation"}})
+ .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+ .then(function(rows){if(!rows.length)throw new Error("perm");
+  var i=sameLocal(t);if(i>=0){S.entries.splice(i,1);store("sr_entries",S.entries);render()}
+  if(S.editId===t.id)endEdit();txm("Entry deleted from database.","ok");loadMonth(true)})
+ .catch(function(err){txm(err.message==="perm"?MSG_PERM:"Could not delete. Check internet.","bad")})}
+var txOpen=false,txPushed=false;
+function showTx(){var b=$("txbody");b.hidden=false;txOpen=true;document.body.style.overflow="hidden";b.scrollTop=0;$("txtoggle").setAttribute("aria-expanded","true");
+ try{history.scrollRestoration="manual"}catch(e){}
+ try{history.pushState({tx:1},"");txPushed=true}catch(e){txPushed=false}}
+function hideTx(){$("txbody").hidden=true;txOpen=false;document.body.style.overflow="";$("txtoggle").setAttribute("aria-expanded","false")}
+function closeTx(){if(!txOpen)return;hideTx();if(txPushed){txPushed=false;try{history.back()}catch(e){}}}
+window.addEventListener("popstate",function(){if(txOpen){txPushed=false;hideTx()}});
+$("txtoggle").onclick=showTx;$("txback").onclick=closeTx;
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&txOpen&&!document.getElementById("pinov"))closeTx()});
+$("mon").onchange=loadMonth;$("txref").onclick=loadMonth;
 (function init(){var t=load("sr_itemtext",DEF_ITEMS);$("items").value=t;S.items=parseItems(t);S.entries=load("sr_entries",[]);S.last=load("sr_last",{});S.lastBatch=load("sr_batch","");if(S.lastBatch)$("doc").value=S.lastBatch;
- $("date").value=today();fillItems();var keep=$("doc").value;paint();if(S.from!=="Raw Material"&&keep)$("doc").value=keep;render();syncNow();
+ $("date").value=today();$("mon").value=today().slice(0,7);fillItems();loadMonth();var keep=$("doc").value;paint();if(S.from!=="Raw Material"&&keep)$("doc").value=keep;render();syncNow();
  loadItemsRemote().then(function(rows){if(rows.length)applyItems(rows);else if(S.items.length)pushItems(S.items).catch(function(){})}).catch(function(){})})();
 var BUILD="__BUILD__";
 (function(){var native=window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform();
