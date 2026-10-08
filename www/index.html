@@ -81,10 +81,11 @@ textarea{min-height:110px;font:14px/1.4 ui-monospace,Consolas,monospace}
 @media (min-width:900px){
 main{max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:20px;align-items:start;grid-template-rows:repeat(5,auto) 1fr;padding:24px 24px 48px}
 main>.upd,main>h1,main>.sub{grid-column:1/-1}
-main>section:nth-of-type(1){grid-column:1;grid-row:4/span 3}
+main>section:nth-of-type(1){grid-column:1;grid-row:4/span 4}
 main>section:nth-of-type(2){grid-column:2;grid-row:4}
 main>section:nth-of-type(3){grid-column:2;grid-row:5}
 main>section:nth-of-type(4){grid-column:2;grid-row:6}
+main>section:nth-of-type(5){grid-column:2;grid-row:7}
 h1{font-size:26px}
 }
 @media (min-width:1500px){main{max-width:1400px}}
@@ -127,6 +128,16 @@ h1{font-size:26px}
 <div id="paste" hidden style="margin-top:12px"><label for="tsv">Select all and copy this text</label><textarea id="tsv" readonly></textarea></div>
 </section>
 
+<section id="bulksec">
+<div class="top"><h2>Bulk add items from Excel</h2></div>
+<label for="items">One item per line: code, name</label>
+<textarea id="items" spellcheck="false" placeholder="EL-004, Angle Cock&#10;EL-005, Bib Cock"></textarea>
+<button class="sec" id="saveItems" type="button" style="margin-top:10px">Add these items</button>
+<div class="msg" id="itmsg2" role="status"></div>
+<p class="note">In Excel, select the code and name columns, copy, paste here, then tap Add. This box stays empty, saved items show in the Items card. If a code already exists, its name is updated.</p>
+
+</section>
+
 <section id="txsec" class="tcard">
 <button type="button" class="thead" id="txtoggle" aria-expanded="false" aria-controls="txbody"><span>Edit / Delete Transactions <span id="txcnt"></span></span><span class="arr" aria-hidden="true">›</span></button>
 <div id="txbody" class="txpage" hidden>
@@ -140,13 +151,24 @@ h1{font-size:26px}
 </div>
 </section>
 
-<section>
-<details><summary>Item list</summary>
-<label for="items">One item per line: code, name</label>
-<textarea id="items" spellcheck="false"></textarea>
-<button class="sec" id="saveItems" type="button" style="margin-top:10px">Save item list</button>
-<p class="note">Tip: in Excel, select Item Master columns A and B (code and name), copy, paste here, then Save. New items are added or updated for every phone. Items are not removed by saving.</p>
-</details>
+<section id="itsec" class="tcard">
+<button type="button" class="thead" id="ittoggle" aria-expanded="false" aria-controls="itbody"><span>Items: Edit / Delete <span id="itcnt"></span></span><span class="arr" aria-hidden="true">›</span></button>
+<div id="itbody" class="txpage" hidden>
+<div class="txhead"><button type="button" id="itback" aria-label="Back">← Back</button><h2>Items <span id="itcnt2"></span></h2><button type="button" id="itref">Refresh</button></div>
+<div class="txin">
+<section id="itform" hidden>
+<div class="lab" id="ithead">Edit item</div>
+<label for="itcode">Item code</label><input id="itcode" type="text" autocapitalize="characters" autocomplete="off" placeholder="e.g. EL-004">
+<label for="itname">Item name</label><input id="itname" type="text" autocomplete="off" placeholder="e.g. Angle Cock">
+<button class="go" id="itsave" type="button">Update item</button>
+<button class="sec" id="itcancel" type="button" style="width:100%;margin-top:10px" hidden>Cancel edit</button>
+<div class="msg" id="itmsg" role="status"></div>
+</section>
+<label for="itsearch">Search items</label><input id="itsearch" type="search" autocomplete="off" placeholder="Search item code or name">
+<ul id="itlist" style="margin-top:8px"></ul>
+<p class="note">Tap Edit or Delete (code needed). Changing a code does not change old transactions, they keep the old code.</p>
+</div>
+</div>
 </section>
 </main>
 <script>
@@ -181,7 +203,7 @@ function syncNow(){if(syncing)return Promise.resolve(false);var pend=S.entries.f
 function showSync(){render()}
 function loadItemsRemote(){return fetch(SB_URL+"/rest/v1/items?select=code,name&order=code.asc&limit=1000",{headers:{"apikey":SB_KEY}}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
 function pushItems(list){return fetch(SB_URL+"/rest/v1/items",{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json","Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(list.map(function(x){return {code:x.code,name:x.name}}))}).then(function(r){if(!r.ok)throw new Error(r.status)})}
-function applyItems(list){S.items=list;var t=list.map(function(x){return x.code+", "+x.name}).join("\n");$("items").value=t;store("sr_itemtext",t);fillItems()}
+function applyItems(list){S.items=list;var t=list.map(function(x){return x.code+", "+x.name}).join("\n");store("sr_itemtext",t);fillItems();renderIt()}
 function msg(t,c){var m=$("msg");m.textContent=t;m.className="msg "+(c||"")}
 var AVGF="=IFERROR(INDEX(I:I,ROW())/INDEX(G:G,ROW()),0)";
 function rowOf(e){return [e.date,e.doc,e.code,e.name,e.from,e.to,e.qty,e.unit,e.wt,AVGF,e.type,e.rej,e.rem].join("\t")}
@@ -221,9 +243,6 @@ $("copy").onclick=function(){if(!S.entries.length)return msg("Nothing to copy ye
  var fb=function(){$("tsv").focus();$("tsv").select();msg("Select all in the box below and copy it.","")};
  try{navigator.clipboard.writeText(t).then(done,fb)}catch(e){fb()}};
 $("clear").onclick=function(){if(!S.entries.length)return;askPin(function(){if(confirm("Delete all saved entries? Do this only after pasting them into Excel.")){S.entries=[];store("sr_entries",S.entries);$("paste").hidden=true;render();msg("Saved entries cleared.","ok")}})};
-$("saveItems").onclick=function(){var list=parseItems($("items").value);if(!list.length)return msg("Enter at least one item as: code, name","bad");msg("Saving items...","");
- pushItems(list).then(loadItemsRemote).then(function(rows){applyItems(rows);msg("Item list saved to database ("+rows.length+" items).","ok")})
- .catch(function(){S.items=list;store("sr_itemtext",$("items").value);fillItems();msg("Saved on this phone only. Database items table not reachable.","bad")})};
 
 var TX=[],MSG_PERM="Not allowed by database. In Supabase run the update/delete policy SQL for entries.";
 function monRange(v){var p=v.split("-"),y=+p[0],m=+p[1],ny=m===12?y+1:y,nm=m===12?1:m+1;return [v+"-01",ny+"-"+String(nm).padStart(2,"0")+"-01"]}
@@ -292,12 +311,67 @@ function showTx(){var b=$("txbody");b.hidden=false;txOpen=true;document.body.sty
  try{history.pushState({tx:1},"");txPushed=true}catch(e){txPushed=false}}
 function hideTx(){$("txbody").hidden=true;txOpen=false;document.body.style.overflow="";$("txtoggle").setAttribute("aria-expanded","false")}
 function closeTx(){if(!txOpen)return;hideTx();if(txPushed){txPushed=false;try{history.back()}catch(e){}}}
-window.addEventListener("popstate",function(){if(txOpen){txPushed=false;hideTx()}});
+window.addEventListener("popstate",function(){if(itOpen){itPushed=false;hideIt();return}if(txOpen){txPushed=false;hideTx()}});
 $("txtoggle").onclick=showTx;$("txback").onclick=closeTx;
-document.addEventListener("keydown",function(e){if(e.key==="Escape"&&txOpen&&!document.getElementById("pinov"))closeTx()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!document.getElementById("pinov")){if(itOpen)closeIt();else if(txOpen)closeTx()}});
 $("mon").onchange=loadMonth;$("txref").onclick=loadMonth;
-(function init(){var t=load("sr_itemtext",DEF_ITEMS);$("items").value=t;S.items=parseItems(t);S.entries=load("sr_entries",[]);S.last=load("sr_last",{});S.lastBatch=load("sr_batch","");if(S.lastBatch)$("doc").value=S.lastBatch;
- $("date").value=today();$("mon").value=today().slice(0,7);fillItems();loadMonth();var keep=$("doc").value;paint();if(S.from!=="Raw Material"&&keep)$("doc").value=keep;render();syncNow();
+
+var itOpen=false,itPushed=false,itEditCode=null;
+function itm(t,c){var m=$("itmsg");m.textContent=t;m.className="msg "+(c||"")}
+function showIt(){var b=$("itbody");b.hidden=false;itOpen=true;document.body.style.overflow="hidden";b.scrollTop=0;$("ittoggle").setAttribute("aria-expanded","true");renderIt();
+ try{history.pushState({it:1},"");itPushed=true}catch(e){itPushed=false}}
+function hideIt(){$("itbody").hidden=true;itOpen=false;document.body.style.overflow="";$("ittoggle").setAttribute("aria-expanded","false");endItEdit()}
+function closeIt(){if(!itOpen)return;hideIt();if(itPushed){itPushed=false;try{history.back()}catch(e){}}}
+$("ittoggle").onclick=showIt;$("itback").onclick=closeIt;
+function renderIt(){var ul=$("itlist");if(!ul)return;ul.innerHTML="";
+ $("itcnt").textContent="("+S.items.length+")";$("itcnt2").textContent="("+S.items.length+")";
+ var q=($("itsearch").value||"").toLowerCase().trim().split(/\s+/).filter(Boolean);
+ var list=S.items.filter(function(it){var h=(it.code+" "+it.name).toLowerCase();return q.every(function(w){return h.indexOf(w)>-1})});
+ if(!list.length){ul.innerHTML='<li class="empty">No items found.</li>';return}
+ list.forEach(function(it){var li=document.createElement("li");
+  var d=document.createElement("div");var b=document.createElement("b");b.textContent=it.code;d.appendChild(b);d.appendChild(document.createTextNode(" "+it.name));li.appendChild(d);
+  var a=document.createElement("div");a.className="acts";
+  var e=document.createElement("button");e.type="button";e.textContent="Edit";e.onclick=function(){askPin(function(){startItEdit(it)})};
+  var x=document.createElement("button");x.type="button";x.className="del";x.textContent="Delete";x.onclick=function(){askPin(function(){delItem(it)})};
+  a.appendChild(e);a.appendChild(x);li.appendChild(a);ul.appendChild(li)})}
+$("itsearch").oninput=renderIt;
+function startItEdit(it){itEditCode=it.code;$("itcode").value=it.code;$("itname").value=it.name;$("ithead").textContent="Edit item";$("itsave").textContent="Update item";$("itcancel").hidden=false;
+ $("itform").hidden=false;$("itform").classList.add("editing");itm("Editing "+it.code+". Change what you need, then tap Update item.","");$("itbody").scrollTop=0}
+function endItEdit(){itEditCode=null;$("itcode").value="";$("itname").value="";$("itform").hidden=true;$("itcancel").hidden=true;$("itform").classList.remove("editing")}
+$("itcancel").onclick=function(){endItEdit();itm("Edit cancelled.","")};
+function itRefresh(){return loadItemsRemote().then(function(rows){applyItems(rows)})}
+$("itref").onclick=function(){itm("Loading...","");itRefresh().then(function(){itm("","")}).catch(function(){itm("Could not load. Check internet.","bad")})};
+$("itsave").onclick=function(){
+ var code=$("itcode").value.trim(),name=$("itname").value.trim();
+ if(!itEditCode)return;
+ if(!code)return itm("Enter the item code.","bad");
+ if(!name)return itm("Enter the item name.","bad");
+ if(code.indexOf(",")>-1)return itm("Code cannot contain a comma.","bad");
+ var clash=S.items.some(function(x){return x.code.toLowerCase()===code.toLowerCase()&&x.code!==itEditCode});
+ if(clash)return itm("Item code "+code+" already exists.","bad");
+ if(itEditCode){var old=itEditCode;itm("Updating...","");
+  fetch(SB_URL+"/rest/v1/items?code=eq."+encodeURIComponent(old),{method:"PATCH",headers:{"apikey":SB_KEY,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({code:code,name:name})})
+  .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(function(rows){if(!rows.length)throw new Error("perm");return itRefresh()})
+  .then(function(){endItEdit();itm("Item updated in database.","ok")})
+  .catch(function(err){itm(err.message==="perm"?"Not allowed by database. In Supabase run the update/delete policy SQL for items.":"Could not update. Check internet.","bad")});
+  return}
+ itm("Adding...","");
+ pushItems([{code:code,name:name}]).then(itRefresh).then(function(){endItEdit();itm("Item added: "+code+" "+name,"ok");$("itsearch").value="";renderIt()})
+ .catch(function(){S.items.push({code:code,name:name});S.items.sort(function(a,b){return a.code<b.code?-1:1});applyItems(S.items);endItEdit();itm("Added on this phone only. Database items table not reachable.","bad")})};
+$("saveItems").onclick=function(){var list=parseItems($("items").value);var m2=$("itmsg2");
+ if(!list.length){m2.textContent="Enter at least one item as: code, name";m2.className="msg bad";return}
+ m2.textContent="Adding...";m2.className="msg";
+ pushItems(list).then(itRefresh).then(function(){$("items").value="";m2.textContent=list.length+" item(s) added.";m2.className="msg ok"})
+ .catch(function(){m2.textContent="Could not add. Check internet and try again.";m2.className="msg bad"})};
+function delItem(it){if(!confirm("Delete this item?\n"+it.code+"  "+it.name+"\nOld transactions are not deleted."))return;itm("Deleting...","");
+ fetch(SB_URL+"/rest/v1/items?code=eq."+encodeURIComponent(it.code),{method:"DELETE",headers:{"apikey":SB_KEY,"Prefer":"return=representation"}})
+ .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+ .then(function(rows){if(!rows.length)throw new Error("perm");if(itEditCode===it.code)endItEdit();return itRefresh()})
+ .then(function(){itm("Item deleted from database.","ok")})
+ .catch(function(err){itm(err.message==="perm"?"Not allowed by database. In Supabase run the update/delete policy SQL for items.":"Could not delete. Check internet.","bad")})}
+(function init(){var t=load("sr_itemtext",DEF_ITEMS);S.items=parseItems(t);S.entries=load("sr_entries",[]);S.last=load("sr_last",{});S.lastBatch=load("sr_batch","");if(S.lastBatch)$("doc").value=S.lastBatch;
+ $("date").value=today();$("mon").value=today().slice(0,7);fillItems();renderIt();loadMonth();var keep=$("doc").value;paint();if(S.from!=="Raw Material"&&keep)$("doc").value=keep;render();syncNow();
  loadItemsRemote().then(function(rows){if(rows.length)applyItems(rows);else if(S.items.length)pushItems(S.items).catch(function(){})}).catch(function(){})})();
 var BUILD="__BUILD__";
 (function(){var native=window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform();
